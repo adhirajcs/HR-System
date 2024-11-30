@@ -21,6 +21,8 @@ class Employee(models.Model):
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     department = models.CharField(max_length=100)
+    designation = models.CharField(max_length=100, blank=True, null=True)
+    salary = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     date_of_joining = models.DateField()
     birthday = models.DateField(null=True, blank=True)  # Optional birthday field
     reporting_manager = models.ForeignKey('ProjectManager', on_delete=models.SET_NULL, null=True, blank=True)
@@ -52,3 +54,22 @@ class HR(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} - HR"
+
+# Holiday List Table
+class Holiday(models.Model):
+    name = models.CharField(max_length=100)
+    date = models.DateField()
+
+    def __str__(self):
+        return f"{self.name} ({self.date})"
+
+# Leave Table
+class Leave(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='leaves')
+    approvable = models.BooleanField(default=False)
+    number_of_days = models.PositiveIntegerField()
+    start_date = models.DateField()
+    end_date = models.DateField()
+
+    def __str__(self):
+        return f"Leave({self.employee.first_name} {self.employee.last_name}, {self.number_of_days} days)"
