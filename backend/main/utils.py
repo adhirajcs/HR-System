@@ -1,6 +1,9 @@
 from datetime import datetime
 from .models import User, Employee, ProjectManager, HR
 
+
+
+# Utility function to create employee user
 def create_employee_user(first_name, last_name, email, phone_number, department, birthday, date_of_joining, reporting_manager=None):
     """
     Utility to create an Employee user and associate it with an Employee profile.
@@ -31,6 +34,8 @@ def create_employee_user(first_name, last_name, email, phone_number, department,
     )
     return user
 
+
+# Utility function to create project manager user
 def create_project_manager_user(first_name, last_name, email, phone_number, department, birthday):
     """
     Utility to create a Project Manager user and associate it with a Project Manager profile.
@@ -59,7 +64,9 @@ def create_project_manager_user(first_name, last_name, email, phone_number, depa
     )
     return user
 
-def create_hr_user(first_name, last_name, email, branch, birthday):
+
+# Utility function to create HR user
+def create_hr_user(first_name, last_name, email, branch, birthday, password):
     """
     Utility to create an HR user and associate it with an HR profile.
     """
@@ -72,6 +79,7 @@ def create_hr_user(first_name, last_name, email, branch, birthday):
         first_name=first_name,
         last_name=last_name,
         email=email,
+        password=password,
         role='HR'
     )
     

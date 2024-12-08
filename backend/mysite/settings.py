@@ -1,4 +1,3 @@
-
 from pathlib import Path
 import os
 from dotenv import find_dotenv, load_dotenv
@@ -36,18 +35,22 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'rest_framework',
+
+    "ninja",
+    "corsheaders",
     "main",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+    
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",    
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
 ROOT_URLCONF = "mysite.urls"
@@ -67,6 +70,11 @@ TEMPLATES = [
         },
     },
 ]
+
+# Settings for CORS and CSRF
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = ["http://localhost:5173"]  # React app URL
+CSRF_TRUSTED_ORIGINS = ['http://localhost:5173']
 
 AUTH_USER_MODEL = 'main.User'
 
