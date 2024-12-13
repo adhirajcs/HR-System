@@ -15,6 +15,7 @@ def get_csrf_token(request):
     return {"csrftoken": get_token(request)}
 
 
+# Api for HR to login
 @api.post("/login")
 def login_view(request, payload: schemas.SignInSchema):
     print(f"Payload received: {payload}")  # For debugging
@@ -32,6 +33,15 @@ def login_view(request, payload: schemas.SignInSchema):
     return {"success": False, "message": "Invalid credentials"}
   
 
+# Api for HR to logout
+@api.post("/logout", auth=django_auth)
+def logout_view(request):
+    username = request.user.username
+    logout(request)
+    return {"message": f"{username} Logged out"}
+
+
+# Api for HR to register
 @api.post("/register")
 def register_hr(request, payload: schemas.RegisterHRSchema):
     try:
