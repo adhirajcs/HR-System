@@ -7,7 +7,7 @@ from .utils import create_hr_user
 from .models import User, Employee, ProjectManager, HR, Holiday, Leave
 from . import schemas
 
-api = NinjaAPI(csrf=True)
+api = NinjaAPI()
 
 
 @api.get("/set-csrf-token")

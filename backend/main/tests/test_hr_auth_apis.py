@@ -1,6 +1,7 @@
 import datetime
 import pytest
 from django.test import Client
+from main.utils import create_hr_user
 from main.models import HR, User
 
 
@@ -17,28 +18,18 @@ def csrf_token(client):
 
 
 @pytest.fixture
-@pytest.mark.django_db
 def hr_user():
     """
     Utility function to create an HR user and their profile.
     """
-    # Create a user object
-    user = User.objects.create_user(
-        username="test_hr",
-        password="test_password",
-        role="HR",
-    )
-
-    # Create an HR profile linked to the user
-    hr_profile = HR.objects.create(
-        username=user,
+    user = create_hr_user(
         first_name="Test",
         last_name="HR",
         email="test_hr@example.com",
         branch="Test Branch",
         birthday=datetime.date(1990, 1, 1),
+        password="test_password"
     )
-
     return user
 
 
