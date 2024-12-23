@@ -89,18 +89,20 @@ def update_employee(
 
 
 # Utility function to delete employee data
-def delete_employee(employee_id):
+def delete_employee(username):
     """
-    Utility to delete Employee data by ID.
+    Utility to delete Employee data by username.
     
     Returns:
         bool: True if the employee is successfully deleted, False if the employee does not exist.
     """
     try:
-        employee = Employee.objects.get(id=employee_id)
+        user = User.objects.get(username=username, role="EMPLOYEE")
+        employee = Employee.objects.get(username=user)
         employee.delete()
+        user.delete()
         return True
-    except Employee.DoesNotExist:
+    except (User.DoesNotExist, Employee.DoesNotExist):
         return False
 
 
