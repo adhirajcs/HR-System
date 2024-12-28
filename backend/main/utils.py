@@ -223,9 +223,3 @@ def delete_project_manager(username):
         return True
     except (User.DoesNotExist, Employee.DoesNotExist):
         return False
-    
-# Utility function to get all HRs
-
-# Utility function to get all employees
-
-# Utility function to get all project managers

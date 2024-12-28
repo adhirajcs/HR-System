@@ -2,7 +2,15 @@ from ninja import NinjaAPI
 from ninja.security import django_auth
 from django.contrib.auth import authenticate, login, logout
 from django.middleware.csrf import get_token
-from .utils import create_employee_user, create_hr_user, update_employee, delete_employee
+from .utils import (
+    create_employee_user,
+    create_hr_user,
+    create_project_manager_user,
+    delete_project_manager,
+    update_employee,
+    delete_employee,
+    update_project_manager,
+)
 
 from .models import User, Employee, ProjectManager, HR, Holiday, Leave
 from . import schemas
@@ -36,7 +44,7 @@ def login_view(request, payload: schemas.SignInSchema):
 # Api for HR to logout
 @api.post("/logout", auth=django_auth)
 def logout_view(request):
-    username = request.user.username
+    username = request.user.usernamez
     logout(request)
     return {"message": f"{username} Logged out"}
 
@@ -128,21 +136,68 @@ def delete_employee_handler(request, username: str):
     return {"success": False, "message": "Failed to delete Employee"}
 
 
+# Api for HR to create project manager
+@api.post("/project-managers/create", auth=django_auth)
+def create_project_manager_handler(
+    request, payload: schemas.ProjectManagerCreateSchema
+):
+    if request.user.role != "HR":
+        return {"success": False, "message": "Unauthorized"}
+    user = create_project_manager_user(
+        first_name=payload.first_name,
+        last_name=payload.last_name,
+        email=payload.email,
+        phone_number=payload.phone_number,
+        department=payload.department,
+        birthday=payload.birthday,
+    )
+    return {
+        "success": True,
+        "message": "Project Manager created",
+        "username": user.username,
+    }
 
-# # Api for HR to create project manager
-# @api.post("/project-managers/create", auth=django_auth)
-# def create_project_manager_handler(request, payload: schemas.ProjectManagerCreateSchema):
-#     if request.user.role != "HR":
-#         return {"success": False, "message": "Unauthorized"}
-#     # ...code for creating ProjectManager...
-#     return {"success": True, "message": "Project Manager created"}
 
-# @api.put("/project-managers/{manager_id}", auth=django_auth)
-# def update_project_manager_handler(request, manager_id: int, payload: schemas.ProjectManagerUpdateSchema):
-#     # ...code for locating and updating ProjectManager...
-#     return {"success": True, "message": "Project Manager updated"}
+# Api for HR to update project manager
+@api.put("/project-managers/{username}", auth=django_auth)
+def update_project_manager_handler(
+    request, username: int, payload: schemas.ProjectManagerUpdateSchema
+):
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return {"success": False, "message": "User not found"}
+    
+    try:
+        project_manager = ProjectManager.objects.get(username_id=user.id)
+    except ProjectManager.DoesNotExist:
+        return {"success": False, "message": "Project Manager not found"}
+    
+    updated_project_manager = update_project_manager(
+        username=user.username,
+        first_name=payload.first_name,
+        last_name=payload.last_name,
+        email=getattr(payload, "email", None),  # or handle if needed
+        phone_number=payload.phone_number,
+        department=payload.department,
+        birthday=payload.birthday,
+    )
 
-# @api.delete("/project-managers/{manager_id}", auth=django_auth)
-# def delete_project_manager_handler(request, manager_id: int):
-#     # ...code for locating and deleting ProjectManager...
-#     return {"success": True, "message": "Project Manager deleted"}
+    if not updated_project_manager:
+        return {"success": False, "message": "Unable to update Project Manager"}
+    
+    return {"success": True, "message": "Project Manager updated"}
+
+
+# Api for HR to delete project manager
+@api.delete("/project-managers/{username}", auth=django_auth)
+def delete_project_manager_handler(request, username: int):
+    if request.user.role != "HR":
+        return {"success": False, "message": "Unauthorized"}
+    try:
+        user = User.objects.get(username=username, role="PROJECT_MANAGER")
+    except User.DoesNotExist:
+        return {"success": False, "message": "Project Manager not found"}
+    if delete_project_manager(user.username):
+        return {"success": True, "message": "Project Manager deleted"}
+    return {"success": False, "message": "Failed to delete Project Manager"}
