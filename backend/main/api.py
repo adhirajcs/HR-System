@@ -23,31 +23,7 @@ def get_csrf_token(request):
     return {"csrftoken": get_token(request)}
 
 
-# Api for HR to login
-@api.post("/login")
-def login_view(request, payload: schemas.SignInSchema):
-    print(f"Payload received: {payload}")  # For debugging
-    user = authenticate(request, username=payload.username, password=payload.password)
-    print(f"Authenticated user: {user}")  # For debugging
-
-    if user:
-        if user.role == "HR":
-            login(request, user)
-            hr_profile = getattr(user, "hr_profile", None)
-            if hr_profile:
-                return {"success": True, "message": f"Welcome {hr_profile.first_name}!"}
-            return {"success": False, "message": "HR profile not found"}
-        return {"success": False, "message": "User is not an HR"}
-    return {"success": False, "message": "Invalid credentials"}
-
-
-# Api for HR to logout
-@api.post("/logout", auth=django_auth)
-def logout_view(request):
-    username = request.user.usernamez
-    logout(request)
-    return {"message": f"{username} Logged out"}
-
+# ---------------------------------- HR APIs ---------------------------------- #
 
 # Api for HR to register
 @api.post("/register")
@@ -70,6 +46,34 @@ def register_hr(request, payload: schemas.RegisterHRSchema):
     except Exception as e:
         return {"success": False, "error": str(e)}
 
+
+# Api for HR to login
+@api.post("/login")
+def login_view(request, payload: schemas.SignInSchema):
+    print(f"Payload received: {payload}")  # For debugging
+    user = authenticate(request, username=payload.username, password=payload.password)
+    print(f"Authenticated user: {user}")  # For debugging
+
+    if user:
+        if user.role == "HR":
+            login(request, user)
+            hr_profile = getattr(user, "hr_profile", None)
+            if hr_profile:
+                return {"success": True, "message": f"Welcome {hr_profile.first_name}!"}
+            return {"success": False, "message": "HR profile not found"}
+        return {"success": False, "message": "User is not an HR"}
+    return {"success": False, "message": "Invalid credentials"}
+
+
+# Api for HR to logout
+@api.post("/logout", auth=django_auth)
+def logout_view(request):
+    username = request.user.username
+    logout(request)
+    return {"message": f"{username} Logged out"}
+
+
+# ---------------------------------- Employee APIs for HR ---------------------------------- #
 
 # Api for HR to create employee
 @api.post("/employees/create", auth=django_auth)
@@ -136,8 +140,10 @@ def delete_employee_handler(request, username: str):
     return {"success": False, "message": "Failed to delete Employee"}
 
 
+# ---------------------------------- Project Manager APIs for HR ---------------------------------- #
+
 # Api for HR to create project manager
-@api.post("/project-managers/create", auth=django_auth)
+@api.post("/project_managers/create", auth=django_auth)
 def create_project_manager_handler(
     request, payload: schemas.ProjectManagerCreateSchema
 ):
@@ -159,7 +165,7 @@ def create_project_manager_handler(
 
 
 # Api for HR to update project manager
-@api.put("/project-managers/{username}", auth=django_auth)
+@api.put("/project_managers/{username}", auth=django_auth)
 def update_project_manager_handler(
     request, username: int, payload: schemas.ProjectManagerUpdateSchema
 ):
@@ -190,7 +196,7 @@ def update_project_manager_handler(
 
 
 # Api for HR to delete project manager
-@api.delete("/project-managers/{username}", auth=django_auth)
+@api.delete("/project_managers/{username}", auth=django_auth)
 def delete_project_manager_handler(request, username: int):
     if request.user.role != "HR":
         return {"success": False, "message": "Unauthorized"}
