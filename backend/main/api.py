@@ -167,7 +167,7 @@ def create_project_manager_handler(
 # Api for HR to update project manager
 @api.put("/project_managers/{username}", auth=django_auth)
 def update_project_manager_handler(
-    request, username: int, payload: schemas.ProjectManagerUpdateSchema
+    request, username: str, payload: schemas.ProjectManagerUpdateSchema
 ):
     try:
         user = User.objects.get(username=username)
@@ -197,7 +197,7 @@ def update_project_manager_handler(
 
 # Api for HR to delete project manager
 @api.delete("/project_managers/{username}", auth=django_auth)
-def delete_project_manager_handler(request, username: int):
+def delete_project_manager_handler(request, username: str):
     if request.user.role != "HR":
         return {"success": False, "message": "Unauthorized"}
     try:

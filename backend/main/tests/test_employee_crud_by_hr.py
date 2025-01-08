@@ -1,7 +1,5 @@
-import datetime
 import pytest
 from django.test import Client
-from django.contrib.auth import get_user_model
 from main.models import Employee
 from main.tests.test_hr_auth_apis import csrf_token, hr_user  # Reuse fixtures
 

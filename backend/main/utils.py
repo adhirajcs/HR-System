@@ -217,8 +217,8 @@ def delete_project_manager(username):
     """
     try:
         user = User.objects.get(username=username, role="PROJECT_MANAGER")
-        employee = Employee.objects.get(username=user)
-        employee.delete()
+        projectmanager = ProjectManager.objects.get(username=user)
+        projectmanager.delete()
         user.delete()
         return True
     except (User.DoesNotExist, Employee.DoesNotExist):
