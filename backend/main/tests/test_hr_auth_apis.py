@@ -98,3 +98,103 @@ def test_get_csrf_token(client):
     assert csrf_token
     assert isinstance(csrf_token, str)
     assert len(csrf_token) > 0
+
+
+@pytest.mark.django_db
+def test_get_all_hrs(client, csrf_token, hr_user):
+    """Test getting all HRs list."""
+    # Login first
+    client.post(
+        "/api/login",
+        {"username": hr_user.username, "password": "test_password"},
+        content_type="application/json",
+    )
+    client.cookies["csrftoken"] = csrf_token
+
+    # Create another HR for testing
+    create_hr_user(
+        first_name="Second",
+        last_name="HR",
+        email="second_hr@example.com",
+        branch="Another Branch",
+        birthday=datetime.date(1992, 2, 2),
+        password="test_password2"
+    )
+
+    # Get all HRs
+    response = client.get(
+        "/api/hrs",
+        HTTP_X_CSRFTOKEN=csrf_token,
+    )
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is True
+    assert len(data["hrs"]) == 2  # Should have two HRs
+    assert any(hr["email"] == "test_hr@example.com" for hr in data["hrs"])
+    assert any(hr["email"] == "second_hr@example.com" for hr in data["hrs"])
+
+
+@pytest.mark.django_db
+def test_get_hr_profile(client, csrf_token, hr_user):
+    """Test viewing HR profile."""
+    # Login first
+    client.post(
+        "/api/login",
+        {"username": hr_user.username, "password": "test_password"},
+        content_type="application/json",
+    )
+    client.cookies["csrftoken"] = csrf_token
+
+    # View own profile
+    response = client.get(
+        f"/api/hr/{hr_user.username}",
+        HTTP_X_CSRFTOKEN=csrf_token,
+    )
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is True
+    assert data["hr"]["email"] == "test_hr@example.com"
+    assert data["hr"]["first_name"] == "Test"
+    assert data["hr"]["last_name"] == "HR"
+
+
+@pytest.mark.django_db
+def test_update_hr_profile(client, csrf_token, hr_user):
+    """Test updating HR profile."""
+    # Login first
+    client.post(
+        "/api/login",
+        {"username": hr_user.username, "password": "test_password"},
+        content_type="application/json",
+    )
+    client.cookies["csrftoken"] = csrf_token
+
+    # Update profile
+    update_payload = {
+        "first_name": "Updated",
+        "last_name": "Name",
+        "branch": "New Branch"
+    }
+    
+    update_response = client.put(
+        "/api/hr/update",
+        update_payload,
+        content_type="application/json",
+        HTTP_X_CSRFTOKEN=csrf_token,
+    )
+    
+    assert update_response.status_code == 200
+    assert update_response.json()["success"] is True
+
+    # Verify changes
+    profile_response = client.get(
+        f"/api/hr/{hr_user.username}",
+        HTTP_X_CSRFTOKEN=csrf_token,
+    )
+    
+    profile_data = profile_response.json()["hr"]
+    assert profile_data["first_name"] == "Updated"
+    assert profile_data["last_name"] == "Name"
+    assert profile_data["branch"] == "New Branch"
