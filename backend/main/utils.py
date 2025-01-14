@@ -2,6 +2,8 @@ from datetime import datetime
 from .models import User, Employee, ProjectManager, HR
 
 
+# --------------------- Utility functions for HR --------------------- #
+
 # Utility function to create HR user
 def create_hr_user(first_name, last_name, email, branch, birthday, password):
     """
@@ -31,6 +33,86 @@ def create_hr_user(first_name, last_name, email, branch, birthday, password):
     )
     return user
 
+
+# Utility function to update HR data
+def update_hr(
+    username,
+    first_name=None,
+    last_name=None,
+    email=None,
+    branch=None,
+    birthday=None,
+):
+    """
+    Utility to update HR data by username and update the associated User as well.
+    """
+    try:
+        user = User.objects.get(username=username, role="HR")
+        hr_profile = HR.objects.get(username=user)
+        
+        if first_name:
+            user.first_name = first_name
+            hr_profile.first_name = first_name
+        if last_name:
+            user.last_name = last_name
+            hr_profile.last_name = last_name
+        if email:
+            user.email = email
+            hr_profile.email = email
+        if branch:
+            hr_profile.branch = branch
+        if birthday:
+            hr_profile.birthday = birthday
+        
+        user.save()
+        hr_profile.save()
+        return hr_profile
+    except (User.DoesNotExist, HR.DoesNotExist):
+        return None
+
+
+def get_all_hrs():
+    """
+    Utility to get all HR profiles with their user data.
+    Returns a list of HR profiles or empty list if none found.
+    """
+    try:
+        hrs = HR.objects.all().select_related('username')
+        hr_list = []
+        for hr in hrs:
+            hr_list.append({
+                "username": hr.username.username,
+                "first_name": hr.first_name,
+                "last_name": hr.last_name,
+                "email": hr.email,
+                "branch": hr.branch,
+                "birthday": str(hr.birthday) if hr.birthday else None
+            })
+        return hr_list
+    except Exception:
+        return []
+
+def get_hr_by_username(username):
+    """
+    Utility to get HR profile by username.
+    Returns HR profile data or None if not found.
+    """
+    try:
+        user = User.objects.get(username=username, role="HR")
+        hr = HR.objects.get(username=user)
+        return {
+            "username": hr.username.username,
+            "first_name": hr.first_name,
+            "last_name": hr.last_name,
+            "email": hr.email,
+            "branch": hr.branch,
+            "birthday": str(hr.birthday) if hr.birthday else None
+        }
+    except (User.DoesNotExist, HR.DoesNotExist):
+        return None
+
+
+# --------------------- Utility functions for Employee --------------------- #
 
 # Utility function to create employee user data
 def create_employee_user(
@@ -135,6 +217,8 @@ def delete_employee(username):
     except (User.DoesNotExist, Employee.DoesNotExist):
         return False
 
+
+# --------------------- Utility functions for Project Manager --------------------- #
 
 # Utility function to create project manager user
 def create_project_manager_user(

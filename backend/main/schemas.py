@@ -13,6 +13,15 @@ class RegisterHRSchema(Schema):
     branch: str
     birthday: str
 
+class HRUpdateSchema(Schema):
+    first_name: str = None
+    last_name: str = None
+    email: str = None
+    branch: str = None
+    birthday: str = None
+
+
+
 class EmployeeCreateSchema(Schema):
     first_name: str
     last_name: str
@@ -31,6 +40,8 @@ class EmployeeUpdateSchema(Schema):
     birthday: str = None
     date_of_joining: str = None
     reporting_manager: str = None
+
+    
 
 class ProjectManagerCreateSchema(Schema):
     first_name: str
