@@ -370,3 +370,30 @@ def get_user_leaves(username, role):
         } for leave in leaves]
     except User.DoesNotExist:
         return None
+
+def create_leave(employee_username, number_of_days, start_date, end_date, approvable=False):
+    """Utility to create a leave record for an employee."""
+    try:
+        user = User.objects.get(username=employee_username)
+        employee = Employee.objects.get(username=user)
+        
+        # Convert string dates to date objects if they're strings
+        if isinstance(start_date, str):
+            start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+        if isinstance(end_date, str):
+            end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
+            
+        # Validate dates
+        if end_date < start_date:
+            return None
+            
+        leave = Leave.objects.create(
+            employee=employee,
+            number_of_days=number_of_days,
+            start_date=start_date,
+            end_date=end_date,
+            approvable=approvable
+        )
+        return leave
+    except (User.DoesNotExist, Employee.DoesNotExist, ValueError):
+        return None

@@ -18,6 +18,7 @@ from .utils import (
     get_all_holidays,
     get_all_leaves,
     get_user_leaves,
+    create_leave
 )
 
 from .models import User, Employee, ProjectManager, HR, Holiday, Leave
@@ -29,6 +30,7 @@ from .schemas import (
     ProjectManagerCreateSchema,
     ProjectManagerUpdateSchema,
     HRUpdateSchema,
+    LeaveCreateSchema
 )
 
 api = NinjaAPI()
@@ -312,3 +314,23 @@ def get_employee_leaves_handler(request, username: str):
     if leaves is None:
         return {"success": False, "message": "Employee not found"}
     return {"success": True, "leaves": leaves}
+
+
+# Api for HR to create leave
+@api.post("/leaves/create", auth=django_auth)
+def create_leave_handler(request, payload: LeaveCreateSchema):
+    if request.user.role != "HR":
+        return {"success": False, "message": "Unauthorized"}
+    
+    leave = create_leave(
+        employee_username=payload.employee_username,
+        number_of_days=payload.number_of_days,
+        start_date=payload.start_date,
+        end_date=payload.end_date,
+        approvable=payload.approvable
+    )
+    
+    if not leave:
+        return {"success": False, "message": "Unable to create leave. Employee not found."}
+    
+    return {"success": True, "message": "Leave created successfully"}

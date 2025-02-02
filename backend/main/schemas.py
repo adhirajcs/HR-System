@@ -4,7 +4,6 @@ class SignInSchema(Schema):
     username: str
     password: str
 
-
 class RegisterHRSchema(Schema):
     first_name: str
     last_name: str
@@ -19,8 +18,6 @@ class HRUpdateSchema(Schema):
     email: str = None
     branch: str = None
     birthday: str = None
-
-
 
 class EmployeeCreateSchema(Schema):
     first_name: str
@@ -41,8 +38,6 @@ class EmployeeUpdateSchema(Schema):
     date_of_joining: str = None
     reporting_manager: str = None
 
-    
-
 class ProjectManagerCreateSchema(Schema):
     first_name: str
     last_name: str
@@ -57,3 +52,10 @@ class ProjectManagerUpdateSchema(Schema):
     phone_number: str = None
     department: str = None
     birthday: str = None
+
+class LeaveCreateSchema(Schema):
+    employee_username: str
+    number_of_days: int
+    start_date: str
+    end_date: str
+    approvable: bool = False
