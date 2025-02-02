@@ -120,3 +120,37 @@ def test_delete_employee(client, csrf_token, hr_user):
     assert delete_response.status_code == 200
     assert delete_response.json()["success"] is True
     assert not Employee.objects.filter(email="bob.davis@example.com").exists()
+
+
+@pytest.mark.django_db
+def test_get_all_employees(client, csrf_token, hr_user):
+    # Login first
+    client.post("/api/login", 
+                {"username": hr_user.username, "password": "test_password"},
+                content_type="application/json")
+    client.cookies["csrftoken"] = csrf_token
+
+    # Create test employees first using the payload from test_create_employee
+    for i in range(3):  # Create 3 test employees
+        payload = {
+            "first_name": f"Test{i}",
+            "last_name": f"Employee{i}",
+            "email": f"test{i}@example.com",
+            "phone_number": f"123456789{i}",
+            "department": "Engineering",
+            "birthday": "1990-01-01",
+            "date_of_joining": "2023-01-01"
+        }
+        client.post("/api/employees/create", 
+                   payload,
+                   content_type="application/json",
+                   HTTP_X_CSRFTOKEN=csrf_token)
+
+    # Get all employees
+    response = client.get("/api/employees",
+                         HTTP_X_CSRFTOKEN=csrf_token)
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is True
+    assert len(data["employees"]) == 3

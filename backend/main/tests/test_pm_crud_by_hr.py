@@ -122,3 +122,36 @@ def test_delete_project_manager(client, csrf_token, hr_user):
     assert delete_response.status_code == 200
     assert delete_response.json()["success"] is True
     assert not ProjectManager.objects.filter(email="bob.davis@example.com").exists()
+
+
+@pytest.mark.django_db
+def test_get_all_project_managers(client, csrf_token, hr_user):
+    # Login first
+    client.post("/api/login",
+                {"username": hr_user.username, "password": "test_password"},
+                content_type="application/json")
+    client.cookies["csrftoken"] = csrf_token
+
+    # Create test project managers
+    for i in range(2):
+        payload = {
+            "first_name": f"Manager{i}",
+            "last_name": f"Test{i}",
+            "email": f"manager{i}@example.com",
+            "phone_number": f"987654321{i}",
+            "department": "Engineering",
+            "birthday": "1985-01-01"
+        }
+        client.post("/api/project_managers/create",
+                   payload,
+                   content_type="application/json",
+                   HTTP_X_CSRFTOKEN=csrf_token)
+
+    # Get all project managers
+    response = client.get("/api/project-managers",
+                         HTTP_X_CSRFTOKEN=csrf_token)
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is True
+    assert len(data["project_managers"]) == 2
