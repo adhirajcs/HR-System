@@ -10,9 +10,14 @@ from .utils import (
     update_employee,
     delete_employee,
     update_project_manager,
-    update_hr,  # Add this import
+    update_hr,
     get_all_hrs,
     get_hr_by_username,
+    get_all_employees,
+    get_all_project_managers,
+    get_all_holidays,
+    get_all_leaves,
+    get_user_leaves,
 )
 
 from .models import User, Employee, ProjectManager, HR, Holiday, Leave
@@ -194,6 +199,15 @@ def delete_employee_handler(request, username: str):
     return {"success": False, "message": "Failed to delete Employee"}
 
 
+# Api for HR to get all employees
+@api.get("/employees", auth=django_auth)
+def get_all_employees_handler(request):
+    if request.user.role != "HR":
+        return {"success": False, "message": "Unauthorized"}
+    employees = get_all_employees()
+    return {"success": True, "employees": employees}
+
+
 # ---------------------------------- Project Manager APIs for HR ---------------------------------- #
 
 
@@ -262,14 +276,39 @@ def delete_project_manager_handler(request, username: str):
     return {"success": False, "message": "Failed to delete Project Manager"}
 
 
-# Api for HR to get all employees
-
 # Api for HR to get all project managers
+@api.get("/project-managers", auth=django_auth)
+def get_all_project_managers_handler(request):
+    if request.user.role != "HR":
+        return {"success": False, "message": "Unauthorized"}
+    managers = get_all_project_managers()
+    return {"success": True, "project_managers": managers}
+
 
 # Api for HR to get all holidays
+@api.get("/holidays", auth=django_auth)
+def get_all_holidays_handler(request):
+    if request.user.role != "HR":
+        return {"success": False, "message": "Unauthorized"}
+    holidays = get_all_holidays()
+    return {"success": True, "holidays": holidays}
+
 
 # Api for HR to get all leaves
+@api.get("/leaves", auth=django_auth)
+def get_all_leaves_handler(request):
+    if request.user.role != "HR":
+        return {"success": False, "message": "Unauthorized"}
+    leaves = get_all_leaves()
+    return {"success": True, "leaves": leaves}
+
 
 # Api for HR to get all leaves of an employee
-
-# Api for HR to get all leaves of a project manager
+@api.get("/employees/{username}/leaves", auth=django_auth)
+def get_employee_leaves_handler(request, username: str):
+    if request.user.role != "HR":
+        return {"success": False, "message": "Unauthorized"}
+    leaves = get_user_leaves(username, "EMPLOYEE")
+    if leaves is None:
+        return {"success": False, "message": "Employee not found"}
+    return {"success": True, "leaves": leaves}

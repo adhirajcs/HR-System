@@ -1,5 +1,5 @@
 from datetime import datetime
-from .models import User, Employee, ProjectManager, HR
+from .models import User, Employee, ProjectManager, HR, Holiday, Leave
 
 
 # --------------------- Utility functions for HR --------------------- #
@@ -218,6 +218,21 @@ def delete_employee(username):
         return False
 
 
+def get_all_employees():
+    """Utility to get all employees with their user data."""
+    employees = Employee.objects.all().select_related('username')
+    return [{
+        "username": emp.username.username,
+        "first_name": emp.first_name,
+        "last_name": emp.last_name,
+        "email": emp.email,
+        "department": emp.department,
+        "date_of_joining": str(emp.date_of_joining),
+        "phone_number": emp.phone_number,
+        "birthday": str(emp.birthday) if emp.birthday else None
+    } for emp in employees]
+
+
 # --------------------- Utility functions for Project Manager --------------------- #
 
 # Utility function to create project manager user
@@ -307,3 +322,51 @@ def delete_project_manager(username):
         return True
     except (User.DoesNotExist, Employee.DoesNotExist):
         return False
+
+
+def get_all_project_managers():
+    """Utility to get all project managers with their user data."""
+    managers = ProjectManager.objects.all().select_related('username')
+    return [{
+        "username": pm.username.username,
+        "first_name": pm.first_name,
+        "last_name": pm.last_name,
+        "email": pm.email,
+        "department": pm.department,
+        "phone_number": pm.phone_number,
+        "birthday": str(pm.birthday) if pm.birthday else None
+    } for pm in managers]
+
+def get_all_holidays():
+    """Utility to get all holidays."""
+    holidays = Holiday.objects.all()
+    return [{
+        "name": holiday.name,
+        "date": str(holiday.date)
+    } for holiday in holidays]
+
+def get_all_leaves():
+    """Utility to get all leaves."""
+    leaves = Leave.objects.all().select_related('employee')
+    return [{
+        "employee_name": f"{leave.employee.first_name} {leave.employee.last_name}",
+        "number_of_days": leave.number_of_days,
+        "start_date": str(leave.start_date),
+        "end_date": str(leave.end_date),
+        "approvable": leave.approvable
+    } for leave in leaves]
+
+def get_user_leaves(username, role):
+    """Utility to get leaves for any employee (including project managers)."""
+    try:
+        user = User.objects.get(username=username)
+        leaves = Leave.objects.filter(employee__username=user)
+        return [{
+            "employee_name": f"{leave.employee.first_name} {leave.employee.last_name}",
+            "number_of_days": leave.number_of_days,
+            "start_date": str(leave.start_date),
+            "end_date": str(leave.end_date),
+            "approvable": leave.approvable
+        } for leave in leaves]
+    except User.DoesNotExist:
+        return None
