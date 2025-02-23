@@ -1,0 +1,32 @@
+API ROUTES DOCUMENTATION
+
+CSRF TOKEN
+GET     /set-csrf-token                      Get CSRF token for authentication
+
+AUTHENTICATION
+POST    /register                            Register new HR user
+POST    /login                               Login for HR
+POST    /logout                              Logout current user
+
+HR MANAGEMENT
+GET     /hrs                                 Get all HRs
+GET     /hr/{username}                       Get specific HR profile
+PUT     /hr/update                           Update HR profile
+
+EMPLOYEE MANAGEMENT
+POST    /employees/create                    Create new employee
+PUT     /employees/{username}                Update employee details
+DELETE  /employees/{username}                Delete employee
+GET     /employees                           Get all employees
+GET     /employees/{username}/leaves         Get leaves for specific employee
+
+PROJECT MANAGER MANAGEMENT
+POST    /project_managers/create             Create new project manager
+PUT     /project_managers/{username}         Update project manager details
+DELETE  /project_managers/{username}         Delete project manager
+GET     /project-managers                    Get all project managers
+
+LEAVE & HOLIDAY MANAGEMENT
+GET     /holidays                            Get all holidays
+GET     /leaves                             Get all leaves
+POST    /leaves/create                      Create new leave

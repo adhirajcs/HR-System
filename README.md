@@ -1,6 +1,6 @@
 # HR System
 
-A comprehensive Human Resource Management System with Django Ninja backend and Next.js frontend.
+A comprehensive Human Resource Management System with Django Ninja backend (Frontend planned for future development).
 
 ## Features
 
@@ -22,33 +22,41 @@ A comprehensive Human Resource Management System with Django Ninja backend and N
   - Leave Request Management
   - Leave Status Tracking
 
-## Project Snapshots
+## Planning & Roadmap
 
-### Dashboard
+### ✅ Phase 1 - Backend Development (Completed)
+- ✓ Django Ninja API infrastructure
+- ✓ Core database models
+- ✓ API endpoints implementation
+- ✓ Authentication & Authorization
+- ✓ API documentation
+- ✓ Test coverage
 
-[Coming Soon]
+### ⏳ Phase 2 - Frontend Development (Planned for Future)
+- Next.js setup and configuration
+- UI/UX design implementation
+- Integration with backend APIs
+- User interface for all core features
+- Testing and optimization
 
-### Employee Management
-
-[Coming Soon]
-
-### Leave Management
-
-[Coming Soon]
+## Current API Documentation
+API documentation is available at: [API_documentation](API_documentation.txt)
 
 ## Tech Stack
 
+### Current (Backend)
 - Backend: Django 5.1.3 + Django Ninja 1.3.0
-- Frontend: Next.js 14.2
 - Database: PostgreSQL
-- UI: TailwindCSS 3.4
-- Authentication: Django Session + CSRF
+- Authentication: Django Session
+
+### Planned (Frontend)
+- Framework: Next.js 14.2
+- UI: TailwindCSS 3.4, Shadcn-UI
 - Runtime: Bun
 
 ## Prerequisites
 
 - Python 3.11+
-- Bun 1.0+
 - PostgreSQL 14+
 
 ## Setup
@@ -102,36 +110,7 @@ python manage.py runserver
 
 ### Frontend Setup
 
-1. Navigate to frontend directory
-
-```bash
-cd frontend
-```
-
-2. Install frontend dependencies
-
-```bash
-bun install
-```
-
-3. Configure frontend environment
-
-```bash
-cp .env.example .env.local
-# Required variables:
-# NEXT_PUBLIC_API_URL=http://localhost:8000/api
-```
-
-4. Run development server
-
-```bash
-bun dev
-```
-
-The application will be available at:
-
-- Backend API: http://localhost:8000
-- Frontend: http://localhost:3000
+> Note: Frontend setup instructions will be updated once frontend development begins.
 
 ## License
 
