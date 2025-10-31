@@ -48,6 +48,7 @@ API documentation is available at: [API_documentation](API_documentation.txt)
 - Backend: Django 5.1.3 + Django Ninja 1.3.0
 - Database: PostgreSQL
 - Authentication: Django Session
+- Testing: pytest
 
 ### Planned (Frontend)
 - Framework: Next.js 14.2
